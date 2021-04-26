@@ -42,20 +42,25 @@ public class ResourceCalculator {
         return outputs;
     }
 
+    private ResourceList addRawMaterial(Resource resource, ResourceList resourceList) {
+        Optional<Resource> output = resourceList.findByName(resource.name);
+        output.ifPresentOrElse(outResource -> outResource.value += resource.value, () -> resourceList.add(resource));
+        return resourceList;
+    }
+
+    private ResourceList addCompoundMaterial(Resource resource, ResourceList resourceList) {
+        Recipe recipe = outputMap.get(resource.name);
+        for (Resource input : recipe.input){
+            double value = input.value/recipe.output.value * resource.value;
+            resourceList = calculateRaw(new Resource(input.name, value), resourceList);
+        }
+        return resourceList;
+    }
     private ResourceList calculateRaw(Resource resource, ResourceList resourceList) {
-        String name = resource.name;
-        if (raw.contains(name)){
-            Optional<Resource> output = resourceList.findByName(name);
-            ResourceList finalResourceList = resourceList;
-            output.ifPresentOrElse(outResource -> outResource.value += resource.value, () -> finalResourceList.add(resource));
-            return finalResourceList;
+        if (raw.contains(resource.name)){
+            return addRawMaterial(resource, resourceList);
         }else{
-            Recipe recipe = outputMap.get(name);
-            for (Resource input : recipe.input){
-                double value = input.value/recipe.output.value * resource.value;
-                resourceList = calculateRaw(new Resource(input.name, value), resourceList);
-            }
-            return resourceList;
+            return addCompoundMaterial(resource, resourceList);
         }
     }
 
@@ -79,7 +84,7 @@ public class ResourceCalculator {
         File file = new File("/home/soph/IdeaProjects/ResourceCalculator/src/main/resources/recipes.json");
         ResourceCalculator rc = new ResourceCalculator();
         rc.loadRecipesFromFile(file);
-        Resource resource = new Resource("inserter", 1);
+        Resource resource = new Resource("inserter", 3);
         ResourceList rs = rc.getCostOfProducing(resource);
         System.out.println(rs);
     }
