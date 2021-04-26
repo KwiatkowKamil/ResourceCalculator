@@ -9,20 +9,26 @@ import java.util.HashSet;
 import java.util.Optional;
 
 public class ResourceCalculator {
-    private Recipe [] recipes;
-    private HashSet<String> raw;
-    private HashMap<String, Recipe> outputMap;
+    private final Recipe [] recipes;
+    private final HashSet<String> raw;
+    private final HashMap<String, Recipe> outputMap;
 
-    private void loadRecipes(FileReader fileReader){
-        JsonReader reader = new JsonReader(fileReader);
+    public ResourceCalculator(String path) {
+        this.recipes = loadRecipesFromFile(new File(path));
+        this.raw = createRawList();
+        this.outputMap = createOutputMap();
+    }
+
+    private Recipe [] loadRecipes(FileReader file){
+        JsonReader reader = new JsonReader(file);
         Gson gson = new Gson();
         JsonElement element = gson.fromJson(reader, JsonElement.class);
         JsonObject object = element.getAsJsonObject();
         JsonArray array = object.getAsJsonArray("recipes");
-        recipes = gson.fromJson(array.toString(), Recipe[].class);
+        return gson.fromJson(array.toString(), Recipe[].class);
     }
 
-    private HashSet<String> getRawList(){
+    private HashSet<String> createRawList(){
         HashSet<String> inputs = new HashSet<>();
         HashSet<String> outputs = new HashSet<>();
         for (Recipe recipe : recipes){
@@ -34,7 +40,7 @@ public class ResourceCalculator {
         inputs.removeAll(outputs);
         return inputs;
     }
-    private HashMap<String, Recipe> getOutputMap(){
+    private HashMap<String, Recipe> createOutputMap(){
         HashMap<String, Recipe> outputs = new HashMap<>();
         for (Recipe recipe : recipes){
             outputs.put(recipe.output.name, recipe);
@@ -44,7 +50,11 @@ public class ResourceCalculator {
 
     private ResourceList addRawMaterial(Resource resource, ResourceList resourceList) {
         Optional<Resource> output = resourceList.findByName(resource.name);
-        output.ifPresentOrElse(outResource -> outResource.value += resource.value, () -> resourceList.add(resource));
+        if(output.isPresent()){
+            output.get().value += resource.value;
+        }else{
+            resourceList.add(resource);
+        }
         return resourceList;
     }
 
@@ -57,36 +67,29 @@ public class ResourceCalculator {
         return resourceList;
     }
     private ResourceList calculateRaw(Resource resource, ResourceList resourceList) {
-        if (raw.contains(resource.name)){
+        if (isRaw(resource)) {
             return addRawMaterial(resource, resourceList);
-        }else{
-            return addCompoundMaterial(resource, resourceList);
         }
+        return addCompoundMaterial(resource, resourceList);
     }
 
-    public void loadRecipesFromFile(File file){
+    private boolean isRaw(Resource resource) {
+        return raw.contains(resource.name);
+    }
+
+    public Recipe[] loadRecipesFromFile(File file){
+        Recipe[] output = new Recipe[0];
         try {
-            loadRecipes(new FileReader(file));
+            output = loadRecipes(new FileReader(file));
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
+        return output;
     }
+
     public ResourceList getCostOfProducing(Resource resource){
-        raw = getRawList();
-        outputMap = getOutputMap();
         ResourceList resources = new ResourceList();
         return calculateRaw(resource, resources);
-    }
-
-
-
-    public static void main(String[] args) {
-        File file = new File("/home/soph/IdeaProjects/ResourceCalculator/src/main/resources/recipes.json");
-        ResourceCalculator rc = new ResourceCalculator();
-        rc.loadRecipesFromFile(file);
-        Resource resource = new Resource("inserter", 3);
-        ResourceList rs = rc.getCostOfProducing(resource);
-        System.out.println(rs);
     }
 
 }
