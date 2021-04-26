@@ -1,0 +1,116 @@
+{
+  "recipes": [
+    {
+      "input": [
+        {
+          "name": "iron_ore",
+          "value": 1
+        }
+      ],
+      "output": {
+        "name": "iron_plate",
+        "value": 1
+      }
+    },
+    {
+      "input": [
+        {
+          "name": "iron_plate",
+          "value": 5
+        }
+      ],
+      "output": {
+        "name": "steel_plate",
+        "value": 1
+      }
+    },
+    {
+      "input": [
+        {
+          "name": "iron_plate",
+          "value": 2
+        }
+      ],
+      "output": {
+        "name": "iron_gear_wheel",
+        "value": 1
+      }
+    },
+    {
+      "input": [
+        {
+          "name": "copper_ore",
+          "value": 1
+        }
+      ],
+      "output": {
+        "name": "copper_plate",
+        "value": 1
+      }
+    },
+    {
+      "input": [
+        {
+          "name": "copper_plate",
+          "value": 1
+        }
+      ],
+      "output": {
+        "name": "copper_cable",
+        "value": 2
+      }
+    },
+    {
+      "input": [
+        {
+          "name": "copper_cable",
+          "value": 3
+        },
+        {
+          "name": "iron_plate",
+          "value": 1
+        }
+      ],
+      "output": {
+        "name": "electronic_circuit",
+        "value": 1
+      }
+    },
+    {
+      "input": [
+        {
+          "name": "iron_gear_wheel",
+          "value": 1
+        },
+        {
+          "name": "iron_plate",
+          "value": 1
+        }
+      ],
+      "output": {
+        "name": "transport_belt",
+        "value": 2
+      }
+    },
+    {
+      "input": [
+        {
+          "name": "iron_gear_wheel",
+          "value": 1
+        },
+        {
+          "name": "iron_plate",
+          "value": 1
+        },
+        {
+          "name": "electronic_circuit",
+          "value": 1
+        }
+      ],
+      "output": {
+        "name": "inserter",
+        "value": 1
+      }
+    }
+  ]
+}
