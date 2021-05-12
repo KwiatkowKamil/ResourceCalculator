@@ -64,7 +64,7 @@ public class ResourceCalculator {
             double value = input.value/recipe.output.value * resource.value;
             resourceList = calculateRaw(new Resource(input.name, value), resourceList);
         }
-        return resourceList; //test //test 2
+        return resourceList; //test //test 2sds
     }
     private ResourceList calculateRaw(Resource resource, ResourceList resourceList) {
         if (isRaw(resource)) {
